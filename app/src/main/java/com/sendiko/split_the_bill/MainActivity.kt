@@ -1,24 +1,33 @@
 package com.sendiko.split_the_bill
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModelProvider
+import com.sendiko.split_the_bill.repository.viewmodels.SplitBillViewModel
+import com.sendiko.split_the_bill.repository.viewmodels.ViewModelFactory
 import com.sendiko.split_the_bill.ui.screen.SplitBillScreen
 import com.sendiko.split_the_bill.ui.theme.SplitthebillTheme
 
 class MainActivity : ComponentActivity() {
+
+    private fun obtainViewModel(application: Application): SplitBillViewModel{
+        val factory = ViewModelFactory.getInstance(application)
+        return ViewModelProvider(this, factory)[SplitBillViewModel::class.java]
+    }
+
+    private val viewModel: SplitBillViewModel by lazy {
+        obtainViewModel(requireNotNull(application))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SplitthebillTheme {
-                SplitBillScreen()
+                val state by viewModel.state.collectAsState()
+                SplitBillScreen(state = state, onEvent = viewModel::onEvent)
             }
         }
     }
