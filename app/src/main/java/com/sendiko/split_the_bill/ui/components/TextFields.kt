@@ -41,10 +41,7 @@ fun CustomOutlinedTextFields(
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         leadingIcon = leadingIcon,
         supportingText = {
-            when(isError){
-                true -> Text(text = errorMessage)
-                else -> null
-            }
+            Text(text = errorMessage)
         }
     )
 }
