@@ -11,4 +11,6 @@ data class SplitBillState(
     val errorBillInput: Boolean = false,
     val errorPersonInput: Boolean = false,
     val maxBillDigits: Int = 10,
+    val isStupid: Boolean = false,
+    val isShowingSuccessMessage: Boolean = false,
 )
