@@ -1,6 +1,5 @@
 package com.sendiko.split_the_bill.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,24 +35,25 @@ fun BillsItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Card(
-                modifier =  Modifier.padding(start = 8.dp)
+                modifier =  Modifier.padding(start = 8.dp),
+                colors = CardDefaults.cardColors(
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
             ) {
                 Text(
                     text = bills.id.toString(),
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
                     modifier = Modifier
                         .padding(16.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
                 )
             }
             Column(
