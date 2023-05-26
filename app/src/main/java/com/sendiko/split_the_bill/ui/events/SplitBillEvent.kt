@@ -6,6 +6,7 @@ sealed interface SplitBillEvent {
     object ClearState : SplitBillEvent
     object SaveSplitBill : SplitBillEvent
     object ExceedMaxDigits: SplitBillEvent
+    object ClearMessageState: SplitBillEvent
     data class DeleteSplitBill(val bills: Bills) : SplitBillEvent
     data class SetBill(val bill: String) : SplitBillEvent
     data class SetPerson(val person: String) : SplitBillEvent
