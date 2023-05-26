@@ -38,6 +38,8 @@ class SplitBillViewModel(
                     errorMessage = "",
                     errorBillInput = false,
                     errorPersonInput = false,
+                    isStupid = false,
+                    isShowingSuccessMessage = false
                 )
             }
             SplitBillEvent.SaveSplitBill -> viewModelScope.launch {
@@ -58,6 +60,13 @@ class SplitBillViewModel(
                     ) }
                     return@launch
                 }
+                if(person == 1){
+                    _state.update { it.copy(
+                        isStupid = true,
+                        errorMessage = "you just pay full price dummy"
+                    ) }
+                    return@launch
+                }
                 if (person > bill){
                     _state.update { it.copy(
                         errorMessage = "bill can't be less than people",
@@ -70,10 +79,10 @@ class SplitBillViewModel(
                     finalBill = bill.div(person).toString(),
                     errorMessage = "",
                     errorBillInput = false,
-                    errorPersonInput = false
+                    errorPersonInput = false,
+                    isShowingSuccessMessage = true
                 ) }
                 dao.insertBill(Bills(bill = bill.toString(), person = person.toString(), splittedBill = bill.div(person).toString()))
-
             }
             SplitBillEvent.ExceedMaxDigits -> {
                 _state.update { it.copy(
@@ -81,6 +90,10 @@ class SplitBillViewModel(
                     errorMessage = "max character exceeded"
                 ) }
             }
+            SplitBillEvent.ClearMessageState -> _state.update { it.copy(
+                isStupid = false,
+                isShowingSuccessMessage = false
+            ) }
             is SplitBillEvent.DeleteSplitBill -> viewModelScope.launch {
                 dao.deleteBill(event.bills)
             }
