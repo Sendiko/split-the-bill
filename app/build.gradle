@@ -62,6 +62,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'//viewmodel
     implementation 'androidx.room:room-ktx:2.5.1' //roomdb
     kapt 'androidx.room:room-compiler:2.5.1' //roomdb
+    implementation 'com.github.stevdza-san:MessageBarCompose:1.0.5' //message bar
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
