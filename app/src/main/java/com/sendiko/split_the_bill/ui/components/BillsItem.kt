@@ -51,7 +51,7 @@ fun BillsItem(
             ) {
                 val localDate = bills.date.split(" ")
                 val date = localDate[0]
-                val month = localDate[1]
+                val month = localDate[1].substring(0, 3)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = date,
@@ -108,7 +108,7 @@ fun BillsItemPrev() {
     Surface {
         BillsItem(
             Bills(
-                id = 1, bill = "12390123", person = "8", splittedBill = "34862", date = "26 July 2005"
+                id = 1, bill = "12390123", person = "8", splittedBill = "34862", date = "26 January 2005"
             ), modifier = Modifier.fillMaxWidth(), onClick = {})
     }
 }
