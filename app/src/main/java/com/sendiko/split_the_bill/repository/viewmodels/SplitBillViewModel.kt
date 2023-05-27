@@ -1,6 +1,8 @@
 package com.sendiko.split_the_bill.repository.viewmodels
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sendiko.split_the_bill.repository.database.Database
@@ -13,6 +15,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class SplitBillViewModel(
     app: Application
@@ -22,12 +26,13 @@ class SplitBillViewModel(
 
     private val _state = MutableStateFlow(SplitBillState())
     private val _bills = dao.getBills()
-    val state = combine(_state, _bills){ state, bills ->
+    val state = combine(_state, _bills) { state, bills ->
         state.copy(
             bills = bills
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SplitBillState())
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: SplitBillEvent) {
         when (event) {
             SplitBillEvent.ClearState -> _state.update {
@@ -38,52 +43,93 @@ class SplitBillViewModel(
                     errorMessage = "",
                     errorBillInput = false,
                     errorPersonInput = false,
+                    isStupid = false,
+                    isShowingSuccessMessage = false
                 )
             }
+
             SplitBillEvent.SaveSplitBill -> viewModelScope.launch {
                 val bill = state.value.bill.toIntOrNull()
                 val person = state.value.person.toIntOrNull()
-                if (bill == null){
-                    _state.update { it.copy(
-                        errorMessage = "the bill can't be null",
-                        errorBillInput = true
-                    ) }
+                if (bill == null) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = "the bill can't be null",
+                            errorBillInput = true
+                        )
+                    }
                     return@launch
                 }
                 if (person == null) {
-                    _state.update { it.copy(
-                        errorMessage = "person can't be null",
-                        errorPersonInput = true,
-                        errorBillInput = false
-                    ) }
+                    _state.update {
+                        it.copy(
+                            errorMessage = "person can't be null",
+                            errorPersonInput = true,
+                            errorBillInput = false
+                        )
+                    }
                     return@launch
                 }
-                if (person > bill){
-                    _state.update { it.copy(
-                        errorMessage = "bill can't be less than people",
-                        errorPersonInput = true,
-                        errorBillInput = false
-                    ) }
+                if (person == 1) {
+                    _state.update {
+                        it.copy(
+                            isStupid = true,
+                            errorMessage = "you just pay full price dummy"
+                        )
+                    }
                     return@launch
                 }
-                _state.update { it.copy(
-                    finalBill = bill.div(person).toString(),
-                    errorMessage = "",
-                    errorBillInput = false,
-                    errorPersonInput = false
-                ) }
-                dao.insertBill(Bills(bill = bill.toString(), person = person.toString(), splittedBill = bill.div(person).toString()))
+                if (person > bill) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = "bill can't be less than people",
+                            errorPersonInput = true,
+                            errorBillInput = false
+                        )
+                    }
+                    return@launch
+                }
+                _state.update {
+                    it.copy(
+                        finalBill = bill.div(person).toString(),
+                        errorMessage = "",
+                        errorBillInput = false,
+                        errorPersonInput = false,
+                        isShowingSuccessMessage = true
+                    )
+                }
+                val date = LocalDate.parse(LocalDate.now().toString())
+                val formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                dao.insertBill(
+                    Bills(
+                        bill = bill.toString(),
+                        person = person.toString(),
+                        splittedBill = bill.div(person).toString(),
+                        date = formattedDate
+                    )
+                )
+            }
 
-            }
             SplitBillEvent.ExceedMaxDigits -> {
-                _state.update { it.copy(
-                    errorBillInput = true,
-                    errorMessage = "max character exceeded"
-                ) }
+                _state.update {
+                    it.copy(
+                        errorBillInput = true,
+                        errorMessage = "max character exceeded"
+                    )
+                }
             }
+
+            SplitBillEvent.ClearMessageState -> _state.update {
+                it.copy(
+                    isStupid = false,
+                    isShowingSuccessMessage = false
+                )
+            }
+
             is SplitBillEvent.DeleteSplitBill -> viewModelScope.launch {
                 dao.deleteBill(event.bills)
             }
+
             is SplitBillEvent.SetPerson -> _state.update { it.copy(person = event.person) }
             is SplitBillEvent.SetBill -> _state.update { it.copy(bill = event.bill) }
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }

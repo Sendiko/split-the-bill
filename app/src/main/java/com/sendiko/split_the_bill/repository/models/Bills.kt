@@ -1,5 +1,6 @@
 package com.sendiko.split_the_bill.repository.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,4 +13,7 @@ data class Bills(
     val bill: String,
     val person: String,
     val splittedBill: String,
+
+    @ColumnInfo(defaultValue = "0")
+    val date: String,
 )
