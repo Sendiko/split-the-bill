@@ -1,6 +1,7 @@
 package com.sendiko.split_the_bill.ui.components
 
-import androidx.compose.foundation.background
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sendiko.split_the_bill.repository.models.Bills
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BillsItem(
     bills: Bills,
@@ -35,25 +38,40 @@ fun BillsItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Card(
-                modifier =  Modifier.padding(start = 8.dp)
-            ) {
-                Text(
-                    text = bills.id.toString(),
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    ),
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                modifier =  Modifier.padding(start = 8.dp),
+                colors = CardDefaults.cardColors(
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
+            ) {
+                val localDate = bills.date.split(" ")
+                val date = localDate[0]
+                val month = localDate[1].substring(0, 3)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = date,
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    )
+                    Text(
+                        text = month,
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    )
+                }
             }
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -67,22 +85,30 @@ fun BillsItem(
             }
         }
         IconButton(onClick = onClick) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "delete",
-                modifier = Modifier.padding(end = 8.dp)
-            )
+            Card(
+                colors = CardDefaults.cardColors(
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "delete",
+                    modifier = Modifier.padding(8.dp),
+                )
+            }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun BillsItemPrev() {
     Surface {
         BillsItem(
             Bills(
-                id = 1, bill = "12390123", person = "8", splittedBill = "34862"
+                id = 1, bill = "12390123", person = "8", splittedBill = "34862", date = "26 January 2005"
             ), modifier = Modifier.fillMaxWidth(), onClick = {})
     }
 }
