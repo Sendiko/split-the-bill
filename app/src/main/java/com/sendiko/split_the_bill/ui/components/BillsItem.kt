@@ -1,5 +1,7 @@
 package com.sendiko.split_the_bill.ui.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sendiko.split_the_bill.repository.models.Bills
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BillsItem(
     bills: Bills,
@@ -46,15 +49,29 @@ fun BillsItem(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
             ) {
-                Text(
-                    text = bills.id.toString(),
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                    ),
-                    modifier = Modifier
-                        .padding(16.dp)
-                )
+                val localDate = bills.date.split(" ")
+                val date = localDate[0]
+                val month = localDate[1]
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = date,
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    )
+                    Text(
+                        text = month,
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    )
+                }
             }
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -68,22 +85,30 @@ fun BillsItem(
             }
         }
         IconButton(onClick = onClick) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "delete",
-                modifier = Modifier.padding(end = 8.dp)
-            )
+            Card(
+                colors = CardDefaults.cardColors(
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "delete",
+                    modifier = Modifier.padding(8.dp),
+                )
+            }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun BillsItemPrev() {
     Surface {
         BillsItem(
             Bills(
-                id = 1, bill = "12390123", person = "8", splittedBill = "34862"
+                id = 1, bill = "12390123", person = "8", splittedBill = "34862", date = "26 July 2005"
             ), modifier = Modifier.fillMaxWidth(), onClick = {})
     }
 }
