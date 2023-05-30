@@ -1,9 +1,11 @@
 package com.sendiko.split_the_bill
 
 import android.app.Application
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +24,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: SplitBillViewModel by lazy {
         obtainViewModel(requireNotNull(application))
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
