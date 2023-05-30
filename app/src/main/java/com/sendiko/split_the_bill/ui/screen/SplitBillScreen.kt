@@ -1,7 +1,9 @@
 package com.sendiko.split_the_bill.ui.screen
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -45,12 +47,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sendiko.split_the_bill.ui.components.BillsItem
 import com.sendiko.split_the_bill.ui.components.CustomOutlinedTextFields
+import com.sendiko.split_the_bill.ui.components.formatToRupiah
 import com.sendiko.split_the_bill.ui.events.SplitBillEvent
 import com.sendiko.split_the_bill.ui.state.SplitBillState
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarPosition
 import com.stevdzasan.messagebar.rememberMessageBarState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     ExperimentalAnimationApi::class
@@ -77,7 +81,7 @@ fun SplitBillScreen(
             when {
                 state.isStupid -> {
                     messageBarState.addError(Exception("you just pay full price dummy"))
-                    android.os.Handler(Looper.myLooper()!!).postDelayed({
+                    Handler(Looper.myLooper()!!).postDelayed({
                         onEvent(SplitBillEvent.ClearMessageState)
                     }, 1000)
                 }
@@ -99,166 +103,187 @@ fun SplitBillScreen(
                 CenterAlignedTopAppBar(
                     title = {
                         Text(text = "Split The Bill!")
-                    }, scrollBehavior = scrollBehavior
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        scrolledContainerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
-            },
-            content = { paddingValues ->
-                LazyColumn(modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .fillMaxSize(),
-                    horizontalAlignment = Alignment.End,
-                    contentPadding = PaddingValues(
-                        top = paddingValues.calculateTopPadding(), start = 8.dp, end = 8.dp
-                    ),
-                    state = listState,
-                    content = {
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Price to split",
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp)
-                                    .fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            CustomOutlinedTextFields(
-                                value = state.bill,
-                                onNewValue = {
-                                    if (it.length <= state.maxBillDigits) {
-                                        onEvent(SplitBillEvent.SetBill(it))
-                                    } else {
-                                        onEvent(SplitBillEvent.ExceedMaxDigits)
-                                    }
-                                },
-                                hint = " 000",
-                                isError = state.errorBillInput,
-                                modifier = Modifier.fillMaxSize(),
-                                leadingIcon = {
-                                    Text(
-                                        text = "Rp.", style = TextStyle(
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                },
-                                errorMessage = when (state.errorBillInput) {
-                                    true -> state.errorMessage
-                                    else -> "please do not use '.' or ',' i'm still working on currency formatting :D"
+            }
+        ) { paddingValues ->
+            LazyColumn(modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .fillMaxSize(),
+                horizontalAlignment = Alignment.End,
+                contentPadding = PaddingValues(
+                    top = paddingValues.calculateTopPadding(), start = 8.dp, end = 8.dp
+                ),
+                state = listState,
+                content = {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Price to split",
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomOutlinedTextFields(
+                            value = state.bill,
+                            onNewValue = {
+                                if (it.length <= state.maxBillDigits) {
+                                    onEvent(SplitBillEvent.SetBill(it))
+                                } else {
+                                    onEvent(SplitBillEvent.ExceedMaxDigits)
                                 }
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Amount of person",
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp)
-                                    .fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            CustomOutlinedTextFields(
-                                value = state.person,
-                                onNewValue = {
-                                    onEvent(SplitBillEvent.SetPerson(it))
-                                },
-                                hint = "0",
-                                isError = state.errorPersonInput,
-                                modifier = Modifier.fillMaxSize(),
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = "person"
+                            },
+                            hint = "000.000",
+                            isError = state.errorBillInput,
+                            modifier = Modifier.fillMaxSize(),
+                            leadingIcon = {
+                                Text(
+                                    text = "Rp.", style = TextStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold
                                     )
-                                },
-                                errorMessage = if (state.errorPersonInput) {
-                                    state.errorMessage
-                                } else ""
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                            },
+                            errorMessage = when (state.errorBillInput) {
+                                true -> state.errorMessage
+                                else -> ""
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Amount of person",
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomOutlinedTextFields(
+                            value = state.person,
+                            onNewValue = {
+                                onEvent(SplitBillEvent.SetPerson(it))
+                            },
+                            hint = "0",
+                            isError = state.errorPersonInput,
+                            modifier = Modifier.fillMaxSize(),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "person"
+                                )
+                            },
+                            errorMessage = if (state.errorPersonInput) {
+                                state.errorMessage
+                            } else ""
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        ) {
+                            AnimatedVisibility(
+                                visible = state.finalBill != "",
+                                enter = slideInHorizontally(),
+                                exit = slideOutHorizontally()
                             ) {
-                                AnimatedVisibility(
-                                    visible = state.finalBill != "",
-                                    enter = slideInHorizontally(),
-                                    exit = slideOutHorizontally()
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    ), modifier = Modifier
+                                        .padding(end = 4.dp)
+                                        .fillMaxHeight()
                                 ) {
-                                    Card(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                        ), modifier = Modifier
-                                            .padding(end = 4.dp)
-                                            .fillMaxHeight()
-                                    ) {
-                                        Text(
-                                            text = "Splitted bill: Rp ${state.finalBill}",
-                                            modifier = Modifier.padding(16.dp)
-                                        )
-                                    }
-                                }
-                                AnimatedContent(
-                                    targetState = state.finalBill != "",
-                                    modifier = Modifier.weight(1f)
-                                ) { finalBillEmpty ->
-                                    when (finalBillEmpty) {
-                                        true -> Button(
-                                            onClick = {
-                                                onEvent(SplitBillEvent.ClearState)
-                                            },
-                                            content = {
-                                                Text("Clear")
-                                            },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .padding(start = 8.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = MaterialTheme.colorScheme.error,
-                                                contentColor = MaterialTheme.colorScheme.onError
-                                            )
-                                        )
-
-                                        false -> Button(
-                                            onClick = {
-                                                onEvent(SplitBillEvent.SaveSplitBill)
-                                            },
-                                            content = {
-                                                Text("Split!")
-                                            },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                        )
-                                    }
-
+                                    Text(
+                                        text = "Splitted bill: ${state.finalBill.formatToRupiah()}",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
                                 }
                             }
+                            AnimatedContent(
+                                targetState = state.finalBill != "",
+                                modifier = Modifier.weight(1f)
+                            ) { finalBillEmpty ->
+                                when (finalBillEmpty) {
+                                    true -> Button(
+                                        onClick = {
+                                            onEvent(SplitBillEvent.ClearState)
+                                        },
+                                        content = {
+                                            Text("Clear")
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(start = 8.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError
+                                        )
+                                    )
+
+                                    false -> Button(
+                                        onClick = {
+                                            onEvent(SplitBillEvent.SaveSplitBill)
+                                        },
+                                        content = {
+                                            Text("Split!")
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    )
+                                }
+
+                            }
                         }
-                        item {
-                            if (isNotEmpty(state.bills)) {
+                    }
+                    item {
+                        AnimatedVisibility(visible = isNotEmpty(state.bills)) {
+                            Text(
+                                text = "History",
+                                style = TextStyle(
+                                    fontSize = 20.sp, fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                            )
+                        }
+                    }
+                    items(state.bills) {
+                        BillsItem(
+                            bills = it,
+                            onClick = {
+                                onEvent(
+                                    SplitBillEvent.DeleteSplitBill(
+                                        it
+                                    )
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    item {
+                        AnimatedVisibility(visible = isNotEmpty(state.bills)) {
+                            Card(
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp, vertical = 16.dp)
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
-                                    text = "History",
-                                    style = TextStyle(
-                                        fontSize = 20.sp, fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 16.dp, horizontal = 8.dp)
+                                    text = "You reach the end of the list",
+                                    modifier = Modifier.padding(16.dp)
                                 )
                             }
                         }
-                        items(state.bills) {
-                            BillsItem(
-                                bills = it, onClick = {
-                                    onEvent(
-                                        SplitBillEvent.DeleteSplitBill(
-                                            it
-                                        )
-                                    )
-                                }, modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    })
-            })
+                    }
+                }
+            )
+        }
     }
 }
