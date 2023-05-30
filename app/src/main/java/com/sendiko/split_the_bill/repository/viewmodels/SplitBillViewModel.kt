@@ -49,7 +49,7 @@ class SplitBillViewModel(
             }
 
             SplitBillEvent.SaveSplitBill -> viewModelScope.launch {
-                val bill = state.value.bill.toIntOrNull()
+                val bill = state.value.bill.deleteCommaAndPeriod().toDoubleOrNull()
                 val person = state.value.person.toIntOrNull()
                 if (bill == null) {
                     _state.update {
@@ -134,6 +134,10 @@ class SplitBillViewModel(
             is SplitBillEvent.SetBill -> _state.update { it.copy(bill = event.bill) }
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }
         }
+    }
+
+    fun String.deleteCommaAndPeriod(): String{
+        return replace(".", "").replace(",", "")
     }
 
 }
