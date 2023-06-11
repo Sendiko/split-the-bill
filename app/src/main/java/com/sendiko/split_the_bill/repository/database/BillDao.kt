@@ -17,6 +17,6 @@ interface BillDao {
     @Delete
     suspend fun deleteBill(bills: Bills)
 
-    @Query("select * from bills order by id asc")
+    @Query("select * from bills order by id desc")
     fun getBills(): Flow<List<Bills>>
 }

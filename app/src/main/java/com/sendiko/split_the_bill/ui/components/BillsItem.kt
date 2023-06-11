@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sendiko.split_the_bill.helper.formatToRupiah
 import com.sendiko.split_the_bill.repository.models.Bills
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -79,16 +80,16 @@ fun BillsItem(
                 modifier = Modifier
                     .padding(8.dp)
             ) {
-                Text(text = "Total bill: ${bills.bill}")
+                Text(text = "Total bill: ${bills.bill.formatToRupiah()}")
                 Text(text = "Amount of person: ${bills.person}")
-                Text(text = "Splitted bill: ${bills.splittedBill}")
+                Text(text = "Splitted bill: ${bills.splittedBill.formatToRupiah()}")
             }
         }
         IconButton(onClick = onClick) {
             Card(
                 colors = CardDefaults.cardColors(
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    containerColor = MaterialTheme.colorScheme.errorContainer
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
                 Icon(
@@ -112,3 +113,6 @@ fun BillsItemPrev() {
             ), modifier = Modifier.fillMaxWidth(), onClick = {})
     }
 }
+
+
+
