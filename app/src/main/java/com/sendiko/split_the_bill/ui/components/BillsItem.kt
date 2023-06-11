@@ -24,9 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sendiko.split_the_bill.helper.formatToRupiah
 import com.sendiko.split_the_bill.repository.models.Bills
-import java.text.NumberFormat
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -113,12 +112,6 @@ fun BillsItemPrev() {
                 id = 1, bill = "12390123", person = "8", splittedBill = "34862", date = "26 January 2005"
             ), modifier = Modifier.fillMaxWidth(), onClick = {})
     }
-}
-
-fun String.formatToRupiah(): String {
-    val number = this.toDoubleOrNull()
-    val formatRupiah = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-    return if (number == null) "" else formatRupiah.format(number)
 }
 
 
