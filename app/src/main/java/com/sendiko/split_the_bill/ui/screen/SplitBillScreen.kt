@@ -45,9 +45,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sendiko.split_the_bill.helper.formatToRupiah
+import com.sendiko.split_the_bill.helper.isNotEmpty
 import com.sendiko.split_the_bill.ui.components.BillsItem
 import com.sendiko.split_the_bill.ui.components.CustomOutlinedTextFields
-import com.sendiko.split_the_bill.ui.components.formatToRupiah
 import com.sendiko.split_the_bill.ui.events.SplitBillEvent
 import com.sendiko.split_the_bill.ui.state.SplitBillState
 import com.stevdzasan.messagebar.ContentWithMessageBar
@@ -64,9 +65,6 @@ fun SplitBillScreen(
     state: SplitBillState, onEvent: (SplitBillEvent) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    fun isNotEmpty(list: List<*>?): Boolean {
-        return list != null && list.isNotEmpty()
-    }
 
     val messageBarState = rememberMessageBarState()
     ContentWithMessageBar(
@@ -256,17 +254,19 @@ fun SplitBillScreen(
                         }
                     }
                     items(state.bills) {
-                        BillsItem(
-                            bills = it,
-                            onClick = {
-                                onEvent(
-                                    SplitBillEvent.DeleteSplitBill(
-                                        it
+                        AnimatedVisibility(visible = isNotEmpty(state.bills)) {
+                            BillsItem(
+                                bills = it,
+                                onClick = {
+                                    onEvent(
+                                        SplitBillEvent.DeleteSplitBill(
+                                            it
+                                        )
                                     )
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                                },
+                                modifier = Modifier.fillMaxWidth().animateItemPlacement()
+                            )
+                        }
                     }
                     item {
                         AnimatedVisibility(visible = isNotEmpty(state.bills)) {
