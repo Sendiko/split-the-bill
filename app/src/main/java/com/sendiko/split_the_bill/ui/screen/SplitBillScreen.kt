@@ -3,6 +3,7 @@ package com.sendiko.split_the_bill.ui.screen
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +11,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +34,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,10 +49,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sendiko.split_the_bill.R
 import com.sendiko.split_the_bill.helper.formatToRupiah
 import com.sendiko.split_the_bill.helper.isNotEmpty
 import com.sendiko.split_the_bill.ui.components.BillsItem
+import com.sendiko.split_the_bill.ui.components.CustomDialog
+import com.sendiko.split_the_bill.ui.components.CustomDropDown
 import com.sendiko.split_the_bill.ui.components.CustomOutlinedTextFields
+import com.sendiko.split_the_bill.ui.components.PRIVACY_POLICY
+import com.sendiko.split_the_bill.ui.components.poweredBy
 import com.sendiko.split_the_bill.ui.events.SplitBillEvent
 import com.sendiko.split_the_bill.ui.state.SplitBillState
 import com.stevdzasan.messagebar.ContentWithMessageBar
@@ -105,10 +114,57 @@ fun SplitBillScreen(
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         scrolledContainerColor = MaterialTheme.colorScheme.surface
-                    )
+                    ),
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                onEvent(SplitBillEvent.SetShowDropDown(!state.isShowingDropDown))
+                                Log.i(
+                                    "DROPDOWN_STATE",
+                                    "SplitBillScreen: ${state.isShowingDropDown}"
+                                )
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More")
+                        }
+                        CustomDropDown(
+                            expanded = state.isShowingDropDown,
+                            items = listOf("Privacy Policy", "About Us"),
+                            onDismissRequest = { onEvent(SplitBillEvent.SetShowDropDown(!state.isShowingDropDown)) },
+                            onClickAction = {
+                                onEvent(SplitBillEvent.SetShowDropDown(!state.isShowingDropDown))
+                                when (it) {
+                                    0 -> onEvent(SplitBillEvent.SetShowDialog(1))
+                                    1 -> onEvent(SplitBillEvent.SetShowDialog(2))
+                                }
+                            }
+                        )
+                    }
                 )
             }
         ) { paddingValues ->
+            when (state.dialog) {
+                1 -> CustomDialog(
+                    title = "Privacy Policy",
+                    description = PRIVACY_POLICY,
+                    onConfirmAction = { onEvent(SplitBillEvent.SetShowDialog(0)) },
+                    onDismissRequest = {
+                        onEvent(SplitBillEvent.SetShowDialog(0))
+                    }
+                )
+
+                2 -> {
+                    CustomDialog(
+                        title = "About Us",
+                        image = R.drawable.logo_long,
+                        description = poweredBy,
+                        onConfirmAction = { onEvent(SplitBillEvent.SetShowDialog(0)) },
+                        onDismissRequest = {
+                            onEvent(SplitBillEvent.SetShowDialog(0))
+                        }
+                    )
+                }
+            }
             LazyColumn(modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize(),
@@ -264,7 +320,9 @@ fun SplitBillScreen(
                                         )
                                     )
                                 },
-                                modifier = Modifier.fillMaxWidth().animateItemPlacement()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItemPlacement()
                             )
                         }
                     }
