@@ -133,10 +133,12 @@ class SplitBillViewModel(
             is SplitBillEvent.SetPerson -> _state.update { it.copy(person = event.person) }
             is SplitBillEvent.SetBill -> _state.update { it.copy(bill = event.bill) }
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }
+            is SplitBillEvent.SetShowDialog -> _state.update { it.copy(dialog = event.dialog) }
+            is SplitBillEvent.SetShowDropDown -> _state.update { it.copy(isShowingDropDown = event.isShowing) }
         }
     }
 
-    fun String.deleteCommaAndPeriod(): String{
+    private fun String.deleteCommaAndPeriod(): String{
         return replace(".", "").replace(",", "")
     }
 
