@@ -11,6 +11,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -112,10 +115,36 @@ fun SplitBillScreen(
                         Text(text = "Split The Bill!")
                     },
                     scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        scrolledContainerColor = MaterialTheme.colorScheme.surface
-                    ),
+                    colors = if (isSystemInDarkTheme()) {
+                        TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    } else {
+                        TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    },
                     actions = {
+                        IconButton(
+                            onClick = { onEvent(SplitBillEvent.SetDarkTheme(!state.isDarkTheme)) },
+                            content = {
+                                if (state.isDarkTheme){
+                                    Icon(
+                                        imageVector = Icons.Default.DarkMode,
+                                        contentDescription = "Dark Mode"
+                                    )
+                                } else Icon(
+                                    imageVector = Icons.Default.LightMode,
+                                    contentDescription = "Light Mode"
+                                )
+                            }
+                        )
                         IconButton(
                             onClick = {
                                 onEvent(SplitBillEvent.SetShowDropDown(!state.isShowingDropDown))
@@ -123,10 +152,11 @@ fun SplitBillScreen(
                                     "DROPDOWN_STATE",
                                     "SplitBillScreen: ${state.isShowingDropDown}"
                                 )
+                            },
+                            content = {
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More")
                             }
-                        ) {
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More")
-                        }
+                        )
                         CustomDropDown(
                             expanded = state.isShowingDropDown,
                             items = listOf("Privacy Policy", "About Us"),
