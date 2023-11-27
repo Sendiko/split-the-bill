@@ -15,4 +15,5 @@ data class SplitBillState(
     val isShowingSuccessMessage: Boolean = false,
     val isShowingDropDown: Boolean = false,
     val dialog: Int = 0,
+    val isDarkTheme: Boolean = true,
 )
