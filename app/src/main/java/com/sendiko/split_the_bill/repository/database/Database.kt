@@ -12,7 +12,7 @@ import com.sendiko.split_the_bill.repository.models.Bills
     autoMigrations = [AutoMigration(from = 1, to = 2)]
 )
 abstract class Database: RoomDatabase() {
-    abstract val dao: BillDao
+    abstract val billDao: BillDao
 
     companion object {
         @Volatile
