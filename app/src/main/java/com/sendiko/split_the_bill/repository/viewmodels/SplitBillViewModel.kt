@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sendiko.split_the_bill.repository.AppPreferences
 import com.sendiko.split_the_bill.repository.database.Database
 import com.sendiko.split_the_bill.repository.models.Bills
 import com.sendiko.split_the_bill.ui.events.SplitBillEvent
@@ -19,16 +20,19 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class SplitBillViewModel(
-    app: Application
+    app: Application,
+    private val pref: AppPreferences
 ) : ViewModel() {
 
-    private val dao = Database.getDatabase(app.applicationContext).dao
+    private val billDao = Database.getDatabase(app.applicationContext).billDao
 
     private val _state = MutableStateFlow(SplitBillState())
-    private val _bills = dao.getBills()
-    val state = combine(_state, _bills) { state, bills ->
+    private val _bills = billDao.getBills()
+    private val _isDarkTheme = pref.getDarkTheme()
+    val state = combine(_state, _bills, _isDarkTheme) { state, bills, isDarkTheme ->
         state.copy(
-            bills = bills
+            bills = bills,
+            isDarkTheme = isDarkTheme
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SplitBillState())
 
@@ -100,7 +104,7 @@ class SplitBillViewModel(
                 }
                 val date = LocalDate.parse(LocalDate.now().toString())
                 val formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                dao.insertBill(
+                billDao.insertBill(
                     Bills(
                         bill = bill.toString(),
                         person = person.toString(),
@@ -127,7 +131,7 @@ class SplitBillViewModel(
             }
 
             is SplitBillEvent.DeleteSplitBill -> viewModelScope.launch {
-                dao.deleteBill(event.bills)
+                billDao.deleteBill(event.bills)
             }
 
             is SplitBillEvent.SetPerson -> _state.update { it.copy(person = event.person) }
@@ -135,6 +139,9 @@ class SplitBillViewModel(
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }
             is SplitBillEvent.SetShowDialog -> _state.update { it.copy(dialog = event.dialog) }
             is SplitBillEvent.SetShowDropDown -> _state.update { it.copy(isShowingDropDown = event.isShowing) }
+            is SplitBillEvent.SetDarkTheme -> viewModelScope.launch {
+                pref.setDarkTheme(event.isDark)
+            }
         }
     }
 
