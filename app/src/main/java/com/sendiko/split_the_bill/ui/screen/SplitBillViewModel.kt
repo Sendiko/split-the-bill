@@ -1,14 +1,12 @@
-package com.sendiko.split_the_bill.repository.viewmodels
+package com.sendiko.split_the_bill.ui.screen
 
-import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sendiko.split_the_bill.repository.database.Database
+import com.sendiko.split_the_bill.repository.database.BillDao
 import com.sendiko.split_the_bill.repository.models.Bills
-import com.sendiko.split_the_bill.ui.events.SplitBillEvent
-import com.sendiko.split_the_bill.ui.state.SplitBillState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -17,12 +15,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class SplitBillViewModel(
-    app: Application
+@HiltViewModel
+class SplitBillViewModel @Inject constructor(
+    private val dao: BillDao
 ) : ViewModel() {
-
-    private val dao = Database.getDatabase(app.applicationContext).dao
 
     private val _state = MutableStateFlow(SplitBillState())
     private val _bills = dao.getBills()
