@@ -11,7 +11,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -58,8 +57,6 @@ import com.sendiko.split_the_bill.ui.components.CustomDropDown
 import com.sendiko.split_the_bill.ui.components.CustomOutlinedTextFields
 import com.sendiko.split_the_bill.ui.components.PRIVACY_POLICY
 import com.sendiko.split_the_bill.ui.components.poweredBy
-import com.sendiko.split_the_bill.ui.screen.SplitBillEvent
-import com.sendiko.split_the_bill.ui.screen.SplitBillState
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarPosition
 import com.stevdzasan.messagebar.rememberMessageBarState
