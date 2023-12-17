@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.sendiko.split_the_bill.helper.formatToRupiah
 import com.sendiko.split_the_bill.repository.models.Bills
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BillsItem(
     bills: Bills,

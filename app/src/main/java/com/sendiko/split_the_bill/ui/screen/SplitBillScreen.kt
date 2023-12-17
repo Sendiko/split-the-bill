@@ -1,13 +1,10 @@
 package com.sendiko.split_the_bill.ui.screen
 
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -61,11 +58,7 @@ import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarPosition
 import com.stevdzasan.messagebar.rememberMessageBarState
 
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SplitBillScreen(
     state: SplitBillState, onEvent: (SplitBillEvent) -> Unit
