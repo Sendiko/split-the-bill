@@ -23,10 +23,12 @@ class SplitBillViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SplitBillState())
-    private val _bills = dao.getBills()
-    val state = combine(_state, _bills) { state, bills ->
+    private val _bills = billDao.getBills()
+    private val _isDarkTheme = pref.getDarkTheme()
+    val state = combine(_state, _bills, _isDarkTheme) { state, bills, isDarkTheme ->
         state.copy(
-            bills = bills
+            bills = bills,
+            isDarkTheme = isDarkTheme
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SplitBillState())
 
@@ -98,7 +100,7 @@ class SplitBillViewModel @Inject constructor(
                 }
                 val date = LocalDate.parse(LocalDate.now().toString())
                 val formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                dao.insertBill(
+                billDao.insertBill(
                     Bills(
                         bill = bill.toString(),
                         person = person.toString(),
@@ -125,7 +127,7 @@ class SplitBillViewModel @Inject constructor(
             }
 
             is SplitBillEvent.DeleteSplitBill -> viewModelScope.launch {
-                dao.deleteBill(event.bills)
+                billDao.deleteBill(event.bills)
             }
 
             is SplitBillEvent.SetPerson -> _state.update { it.copy(person = event.person) }
@@ -133,6 +135,9 @@ class SplitBillViewModel @Inject constructor(
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }
             is SplitBillEvent.SetShowDialog -> _state.update { it.copy(dialog = event.dialog) }
             is SplitBillEvent.SetShowDropDown -> _state.update { it.copy(isShowingDropDown = event.isShowing) }
+            is SplitBillEvent.SetDarkTheme -> viewModelScope.launch {
+                pref.setDarkTheme(event.isDark)
+            }
         }
     }
 

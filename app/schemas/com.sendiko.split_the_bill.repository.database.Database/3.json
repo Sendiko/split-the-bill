@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "2c9755bdc9ad28a16dccea98ed681d2f",
+    "identityHash": "df6f3177cfea619a8ae9ea543cc28894",
     "entities": [
       {
         "tableName": "bills",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bill` TEXT NOT NULL, `person` TEXT NOT NULL, `splittedBill` TEXT NOT NULL, `date` TEXT NOT NULL DEFAULT 'dd MMMM yyyy')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bill` TEXT NOT NULL, `person` TEXT NOT NULL, `splittedBill` TEXT NOT NULL, `date` TEXT NOT NULL DEFAULT '0')",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,7 +37,33 @@
             "columnName": "date",
             "affinity": "TEXT",
             "notNull": true,
-            "defaultValue": "'dd MMMM yyyy'"
+            "defaultValue": "'0'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "preferences",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `isDarkTheme` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDarkTheme",
+            "columnName": "isDarkTheme",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -53,7 +79,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c9755bdc9ad28a16dccea98ed681d2f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'df6f3177cfea619a8ae9ea543cc28894')"
     ]
   }
 }
