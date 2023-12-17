@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sendiko.split_the_bill.repository.database.Database
 import com.sendiko.split_the_bill.repository.models.Bills
-import com.sendiko.split_the_bill.ui.events.SplitBillEvent
-import com.sendiko.split_the_bill.ui.state.SplitBillState
+import com.sendiko.split_the_bill.ui.screen.SplitBillEvent
+import com.sendiko.split_the_bill.ui.screen.SplitBillState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

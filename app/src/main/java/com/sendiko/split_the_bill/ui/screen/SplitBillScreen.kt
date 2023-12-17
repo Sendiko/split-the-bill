@@ -58,8 +58,8 @@ import com.sendiko.split_the_bill.ui.components.CustomDropDown
 import com.sendiko.split_the_bill.ui.components.CustomOutlinedTextFields
 import com.sendiko.split_the_bill.ui.components.PRIVACY_POLICY
 import com.sendiko.split_the_bill.ui.components.poweredBy
-import com.sendiko.split_the_bill.ui.events.SplitBillEvent
-import com.sendiko.split_the_bill.ui.state.SplitBillState
+import com.sendiko.split_the_bill.ui.screen.SplitBillEvent
+import com.sendiko.split_the_bill.ui.screen.SplitBillState
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarPosition
 import com.stevdzasan.messagebar.rememberMessageBarState

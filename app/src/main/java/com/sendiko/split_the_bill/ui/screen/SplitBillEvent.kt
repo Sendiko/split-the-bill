@@ -1,4 +1,4 @@
-package com.sendiko.split_the_bill.ui.events
+package com.sendiko.split_the_bill.ui.screen
 
 import com.sendiko.split_the_bill.repository.models.Bills
 
