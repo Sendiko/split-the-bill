@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AppPreferences private constructor(private val dataStore: DataStore<Preferences>){
+class AppPreferences(private val dataStore: DataStore<Preferences>){
 
     private val darkThemeKey = booleanPreferencesKey("is_dark")
 
@@ -20,19 +20,6 @@ class AppPreferences private constructor(private val dataStore: DataStore<Prefer
     suspend fun setDarkTheme(isDarkTheme: Boolean){
         dataStore.edit {
             it[darkThemeKey] = isDarkTheme
-        }
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppPreferences? = null
-
-        fun getInstance(dataStore: DataStore<Preferences>): AppPreferences {
-            return INSTANCE ?: synchronized(this) {
-                val instance = AppPreferences(dataStore)
-                INSTANCE = instance
-                instance
-            }
         }
     }
 }
