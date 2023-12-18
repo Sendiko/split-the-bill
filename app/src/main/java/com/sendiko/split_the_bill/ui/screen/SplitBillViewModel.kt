@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sendiko.split_the_bill.repository.AppPreferences
 import com.sendiko.split_the_bill.repository.database.BillDao
 import com.sendiko.split_the_bill.repository.models.Bills
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,11 +20,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplitBillViewModel @Inject constructor(
-    private val dao: BillDao
+    private val dao: BillDao,
+    private val pref: AppPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SplitBillState())
-    private val _bills = billDao.getBills()
+    private val _bills = dao.getBills()
     private val _isDarkTheme = pref.getDarkTheme()
     val state = combine(_state, _bills, _isDarkTheme) { state, bills, isDarkTheme ->
         state.copy(
@@ -100,7 +102,7 @@ class SplitBillViewModel @Inject constructor(
                 }
                 val date = LocalDate.parse(LocalDate.now().toString())
                 val formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                billDao.insertBill(
+                dao.insertBill(
                     Bills(
                         bill = bill.toString(),
                         person = person.toString(),
@@ -127,7 +129,7 @@ class SplitBillViewModel @Inject constructor(
             }
 
             is SplitBillEvent.DeleteSplitBill -> viewModelScope.launch {
-                billDao.deleteBill(event.bills)
+                dao.deleteBill(event.bills)
             }
 
             is SplitBillEvent.SetPerson -> _state.update { it.copy(person = event.person) }
