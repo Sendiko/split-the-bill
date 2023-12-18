@@ -2,6 +2,8 @@ package com.sendiko.split_the_bill.di
 
 import android.content.Context
 import androidx.room.Room
+import com.sendiko.split_the_bill.dataStore
+import com.sendiko.split_the_bill.repository.AppPreferences
 import com.sendiko.split_the_bill.repository.database.BillDao
 import com.sendiko.split_the_bill.repository.database.Database
 import dagger.Module
@@ -28,5 +30,12 @@ object AppModule {
     @Provides
     fun provideDao(database: Database): BillDao{
         return database.dao
+    }
+
+    @Singleton
+    @Provides
+    fun providePreferences(@ApplicationContext context: Context): AppPreferences{
+        val dataStore = context.dataStore
+        return AppPreferences(dataStore)
     }
 }
