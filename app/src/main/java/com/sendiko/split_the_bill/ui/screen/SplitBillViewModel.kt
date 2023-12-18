@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sendiko.split_the_bill.repository.AppPreferences
 import com.sendiko.split_the_bill.repository.database.BillDao
 import com.sendiko.split_the_bill.repository.models.Bills
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,14 +20,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplitBillViewModel @Inject constructor(
-    private val dao: BillDao
+    private val dao: BillDao,
+    private val pref: AppPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SplitBillState())
     private val _bills = dao.getBills()
-    val state = combine(_state, _bills) { state, bills ->
+    private val _isDarkTheme = pref.getDarkTheme()
+    val state = combine(_state, _bills, _isDarkTheme) { state, bills, isDarkTheme ->
         state.copy(
-            bills = bills
+            bills = bills,
+            isDarkTheme = isDarkTheme
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SplitBillState())
 
@@ -133,6 +137,9 @@ class SplitBillViewModel @Inject constructor(
             is SplitBillEvent.SetSplittedSplitBill -> _state.update { it.copy(finalBill = event.splittedBill) }
             is SplitBillEvent.SetShowDialog -> _state.update { it.copy(dialog = event.dialog) }
             is SplitBillEvent.SetShowDropDown -> _state.update { it.copy(isShowingDropDown = event.isShowing) }
+            is SplitBillEvent.SetDarkTheme -> viewModelScope.launch {
+                pref.setDarkTheme(event.isDark)
+            }
         }
     }
 

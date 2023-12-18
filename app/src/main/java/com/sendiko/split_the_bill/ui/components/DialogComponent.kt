@@ -43,7 +43,11 @@ fun CustomDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (image != null) {
-                        Image(painter = painterResource(id = image), contentDescription = title)
+                        Image(
+                            modifier = Modifier.fillMaxWidth(),
+                            painter = painterResource(id = image),
+                            contentDescription = title
+                        )
                     }
                     Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Text(text = description, textAlign = TextAlign.Justify)

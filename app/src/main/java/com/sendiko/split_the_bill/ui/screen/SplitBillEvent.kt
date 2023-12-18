@@ -13,4 +13,5 @@ sealed interface SplitBillEvent {
     data class SetSplittedSplitBill(val splittedBill: String) : SplitBillEvent
     data class SetShowDialog(val dialog: Int): SplitBillEvent
     data class SetShowDropDown(val isShowing: Boolean): SplitBillEvent
+    data class SetDarkTheme(val isDark: Boolean): SplitBillEvent
 }
